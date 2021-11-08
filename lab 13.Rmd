@@ -1,0 +1,137 @@
+---
+title: "LAB 13 DiD"
+author: "Sehrish Ghayas"
+date: "11/8/2021"
+output:
+  pdf_document: default
+  html_document: default
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+require(data.table) 
+require(ggplot2) 
+require(stargazer) 
+load("fastfood3.RData")
+load("fastfood4.RData")
+load("fastfood.RData")
+
+##Minimum Wages and Employment: A case study of the fast-food
+
+head(dt.fastfood)
+
+##Change in wage 
+plot1 <- ggplot( data = dt.fastfood, aes(x=wage))
+plot1 + geom_density() + facet_wrap( ~ state + time) + theme_bw()
+
+##Means of variables 
+
+dt.bf.aft <- data.table(dt.fastfood) 
+dt.bf.aft <- dt.bf.aft[,list mean_emptot = mean(emptot , na.rm=TRUE)
+, mean_wage = mean(wage , na.rm=TRUE)
+, mean_pmeal = mean(pmeal , na.rm=TRUE)
+, mean_hrsopen = mean(hrsopen , na.rm=TRUE)
+), by=list(state, time)] dt.bf.aft
+
+##clean data
+
+dt.bf.aft.clean <- dt.fastfood[!is.na(wage),]
+dt.bf.aft.clean <- dt.bf.aft.clean[!is.na(pmeal),]
+dt.bf.aft.clean <- dt.bf.aft.clean[!is.na(emptot),]
+dt.bf.aft.clean <- dt.bf.aft.clean[!is.na(hrsopen),]
+dt.bf.aft.clean <- dt.bf.aft.clean[!is.na(emptot),]
+
+dt.bf.aft.clean <- data.table(dt.fastfood.clean)
+dt.bf.aft.clean <- dt.bf.aft.clean[, list(
+mean_emptot = mean(emptot , na.rm=TRUE)
+, mean_wage = mean(wage , na.rm=TRUE)
+, mean_pmeal = mean(pmeal , na.rm=TRUE)
+, mean_hrsopen = mean(hrsopen , na.rm=TRUE)
+), by=list(state, time)]
+dt.bf.aft.clean
+
+##t test to check differnec in mean at TO
+
+t.test( dt.fastfood.clean[state==0 & time==0, emptot]
+, dt.fastfood.clean[state==1 & time==0, emptot])
+##differenc in mean at T1
+
+t.test( dt.fastfood.clean[state==0 & time==1, emptot]
+, dt.fastfood.clean[state==1 & time==1, emptot])
+
+##DiD
+(21.02743-20.44557) - (21.16558-23.33117)
+## using clean data
+
+(20.71293-20.51397) - (21.50000-23.62687)
+
+##DiD regression
+
+lm1 <- lm( emptot ~ time + state + time*state, data = dt.fastfood.clean)
+stargazer(lm1, type = "text")
+
+coeffs <- coefficients(lm1)
+coeffs
+
+##Adding controls for chain and ownerhip
+
+lm <- lm( emptot ~ time + state + time*state + factor(chain) + co_owned
+, data = dt.fastfood.clean)
+stargazer(lm, type = "text")
+
+## Impact on change in meal price plot
+
+qplot( data = dt.fastfood, x = factor(time), y = pmeal
+,fill = factor(state), geom = 'boxplot') + theme_bw() + xlab("time") + ylab("Meal Price")
+##Impact on change in meal price plot
+lm <- lm( pmeal ~ time + state + time*state
+, data = dt.fastfood.clean)
+stargazer(lm, type = "text")
+
+##Change in number of hours of operation:
+qplot( data = dt.fastfood, x = factor(time), y = hrsopen
+,fill = factor(state), geom = 'boxplot') + theme_bw() + xlab("time") + ylab("Hours of Operation")
+
+#regression (effect on hours open)
+lm <- lm( hrsopen ~ time + state + time*state
+, data = dt.fastfood.clean)
+stargazer(lm, type = "text")
+
+##regression (impact on the fraction of full-time employees
+lm <- lm( fracft ~ time + state + time*state, data = dt.fastfood.clean)
+stargazer(lm, type = "text")
+
+## regression with gap variable 
+summary(dt.fastfood.clean$gap)
+
+lm <- lm( emptot ~ gap * time , data = dt.fastfood.clean)
+stargazer(lm, type = "text")
+
+
+
+
+
+
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
