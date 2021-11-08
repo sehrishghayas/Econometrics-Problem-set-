@@ -1,0 +1,78 @@
+---
+title: "HomeWork LAB 10"
+author: "Sehrish Ghayas"
+date: "11/8/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+require(data.table)
+require(sandwich)
+require(stargazer)
+head(dt.wages)
+require(ggplot)
+summary(dt.wages)
+
+### regression 
+
+lm1 <- lm(wage ~ south , data=dt.wages)
+stargazer(lm1, type = 'text')
+
+## regression with control var 
+
+lm2 <- lm(wage ~ female + nonwhite + south  , data=dt.wages)
+stargazer(lm2, type = 'text')
+###c heterogeneous effects
+
+lm3 <- lm(wage ~ female + nonwhite + south + female*south + nonwhite*south , data=dt.wages)
+stargazer(lm3, type = 'text')
+
+## d two step fitted regression 
+library(ivreg)
+require(AER)
+ivreg1<- ivreg(wage ~ south | female , data = dt.wages)
+summary(ivreg1)
+##adding control variable exper 
+ivreg2<- ivreg(wage ~ south + nonwhite | nonwhite + female + exper , data =dt.wages)
+summary(ivreg2)
+
+##heterogeneous treatment effects w.r.t. experience.
+
+lmhetro<- lm(wage ~ south + nonwhite  + female + south*exper , data =dt.wages)
+summary(lmhetro)
+
+## 3 check the balance in the covariates
+summary(dt.wages , south =1)
+summary(dt.wages , south =0)
+
+============================================================
+
+
+
+
+
+
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
