@@ -1,0 +1,108 @@
+---
+title: "LAB 13 A (12)"
+author: "Sehrish Ghayas"
+date: "11/9/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+library(data.table)
+library(ggplot2)
+##structure of the data 
+str(dt.wages)
+## peak of the data 
+head(dt.wages, 3)
+tail(dt.wages, 3) 
+##summary of the data 
+summary(dt.wages)
+library(stargazer)
+stargazer(dt.wages, type ='text')
+stargazer(dt.wages, type= 'text', iqr = TRUE)
+
+##tabulate
+table(dt.wages [,list(female, nonwhite)])
+##tabulate 
+table(dt.wages[, list(female,nonwhite,south)])
+table(dt.wages[, list(female,tenure)])
+table(dt.wages[,list(nonwhite, tenure)])
+###Categorical Data: Bar Plot
+qplot(factor(educ), data=dt.wages, geom ='bar')
+##Categorical Data: Pie Chart
+qplot(x= factor(1),fill=factor(educ), data = dt.wages,geom = 'bar') + ccord_polar (theta ='y')
+
+##Continuous Data: Histogram
+qplot(wage, data=dt.wages, geom = 'histogram')
+qplot(wage, data = dt.wages , geom = 'histogram, binwidth =2)
+
+###Continuous Data: Boxplot
+qplot(x= factor ('All'), y=wage, data = dt.wages, geom = 'boxplot')
+qplot(factor (female), wage, data=dt.wages, geom= 'boxplot')
+
+##Continuous vs Categorical Data: Boxplot
+qplot(factor(female),wage, fill= factor(nonwhite), data=dt.wages, geom='boxplot')
+qplot(factor(nonwhite),wage, fill =factor(female), data=dt.wages, geom = 'boxplot')
+##Continuous vs Continuous Data: Scatter Plot
+qplot(educ, wage , data=dt.wages, geom= 'point')
+qplot(educ, wage, color=factor(female), data= dt.wages, geom='point')
+
+##Discrete vs Continuous Data: Scatter Plot
+ggplot(dt.wages)  + geom_point(aes (educ, wage)) + facet_grid(~female) 
++ geom_point (aes (educ , wage) ) + facet _grid ( ~ female )
+
+qplot (educ , wage, color=factor ( female ) , data=dt .wages , geom=  'point')
+
+qplot (educ , wage, data=dt .wages , geom=" point " )
+
+## Continuous vs Categorical Data: Boxplot
+ggplot(dt.wages)+ geom_boxplot(aes(factor(educ), exper))
+ggplot ( dt .wages) + geom_boxplot(aes ( factor (educ ) , exper ) )
+
+##scattar plot
+ggplot(dt.wages) + geom_point(aes(educ , wage)) + facet_grid(nonwhite~female)
+ggplot(dt.wages)+ geom_point (aes(educ, wage)) + facet_grid (nonwhite ~ female , margins= TRUE)
+##ggpairs 
+library(GGally)
+ggpairs(dt.wages[, list (wage, educ, exper)])
+ggpairs(dt.wages [ , list( female=factor ( female ) , nonwhite=factor (nonwhite ) ) ] )
+ggpairs(dt .wages[, list (wage, educ , exper , female=factor ( female ) , nonwhite=factor (nonwhite))]
+
+##outliers
+dt.wages[wage > 20,] [order(-wage)]
+qplot(lwage, data=dt.wages, geom = 'histogram')
+
+qplot (lwage , data=dt .wages , geom="histogram" )
+
+##descriptive statistics outliers 
+dt.wages[wage<0,]
+
+
+
+
+
+
+
+
+
+
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
